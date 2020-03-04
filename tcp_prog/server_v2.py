@@ -29,7 +29,7 @@ class MyServer(socketserver.BaseRequestHandler):
 if __name__ == '__main__':
     # 创建一个多线程TCP服务器
     server = socketserver.ThreadingTCPServer(("192.168.45.131", 9999), MyServer)
-    print("启动服务器")
+    print("启动SocketServer服务器...")
     # 启动服务器并保持一直运行
     server.serve_forever()
 
