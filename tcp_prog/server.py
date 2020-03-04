@@ -1,11 +1,8 @@
 # coding:utf-8
-
-import os
-import sys
 import socket
 
 
-def create_conn():
+def main():
     # ip_port = ('127.0.0.1', 9999)
     ip_port = ('192.168.45.131', 9999)
 
@@ -21,10 +18,7 @@ def create_conn():
         print("来自%s的客户端向你发来信息：%s" % (addr, recv_data))
         conn.sendall("服务器已收到你的信息".encode('utf-8'))
     conn.close()
-
-
-def main():
-    create_conn()
+    sk.close()
 
 
 if __name__ == '__main__':
