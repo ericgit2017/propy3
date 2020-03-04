@@ -21,8 +21,8 @@ def conn_handler(conn, client):
         if recv_data == "exit":
             print("结束与[%s:%s]的通讯连接！" % (client[0], client[1]))
             break
-        print("来自[%s:%s]的客户端发来信息：%s" %(client[0], client[1], recv_data))
-        conn.sendall("服务器已收到信息！").encode("utf-8")
+        print("来自[%s:%s]的客户端发来信息：%s" % (client[0], client[1], recv_data))
+        conn.sendall("服务器已收到你的信息".encode('utf-8'))
     conn.close()
 
 
