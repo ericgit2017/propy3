@@ -32,4 +32,4 @@ if __name__ == '__main__':
     print("启动SocketServer服务器...")
     # 启动服务器并保持一直运行
     server.serve_forever()
-
+    print("hello")
