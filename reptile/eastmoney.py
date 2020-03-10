@@ -4,7 +4,6 @@
 @file: eastmoney.py
 @time: 2020/03/10
 """
-import urllib
 import requests
 from bs4 import BeautifulSoup
 import time
