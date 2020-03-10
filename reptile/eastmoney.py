@@ -44,7 +44,7 @@ user_agent = ["Mozilla/5.0 (Windows NT 10.0; WOW64)", 'Mozilla/5.0 (Windows NT 6
 def agent_access(test_url):
     for i in range(1, 1912):
         url = "http://www.66ip.cn/" + str(i) + ".html"
-        response = requests.get(url, headers=random.choice(user_agent))
+        response = requests.get(url, headers={"User-Agent": random.choice(user_agent)})
         soup = BeautifulSoup(response.content.decode("gbk"), "lxml")
         trs = soup.find("table", attrs={"bordercolor": "#6699ff"}).find_all("tr")
         for tr in trs[1:]:
@@ -55,7 +55,7 @@ def agent_access(test_url):
             # 验证代理是否可用，如果不可以则抛出异常
             try:
                 proxies = {"http": proxy}
-                response = requests.get(test_url, header=random.choice(user_agent), proxies=proxies, timeout=3)
+                response = requests.get(test_url, headers={"User-Agent": random.choice(user_agent)}, proxies=proxies, timeout=3)
                 if response.status_code == 200:
                     with open("ipList.txt", "a", encoding="utf-8") as f:
                         f.write(proxy + "\n")
