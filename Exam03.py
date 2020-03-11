@@ -31,5 +31,5 @@ def get_sys_modules():
 
 
 if __name__ == "__main__":
-    # get_files()
-    get_sys_modules()
+    get_files()
+    #get_sys_modules()

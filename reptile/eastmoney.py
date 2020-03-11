@@ -8,6 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 import time
 import random
+import multiprocessing
 
 user_agent = ["Mozilla/5.0 (Windows NT 10.0; WOW64)", 'Mozilla/5.0 (Windows NT 6.3; WOW64)',
               'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
@@ -40,29 +41,45 @@ user_agent = ["Mozilla/5.0 (Windows NT 10.0; WOW64)", 'Mozilla/5.0 (Windows NT 6
               'TaoBrowser/3.0 Safari/536.11']
 
 
-def agent_access(test_url):
+def get_proxy_ip(q, url, test_url):
+    print("\033[1;34m="*30, "处理网页：", url, "="*30, "\033[0m")
+    response = requests.get(url, headers={"User-Agent": random.choice(user_agent)})
+    soup = BeautifulSoup(response.content.decode("gbk"), "lxml")
+    trs = soup.find("table", attrs={"bordercolor": "#6699ff"}).find_all("tr")
+    for tr in trs[1:]:
+        ip = tr.find_all("td")[0].get_text()
+        port = tr.find_all("td")[1].get_text()
+        proxy = "http://" + ip + ":" + port
+        # 验证代理是否可用，如果不可以则抛出异常
+        try:
+            proxies = {"http": proxy}
+            response = requests.get(test_url, headers={"User-Agent": random.choice(user_agent)}, proxies=proxies,
+                                    timeout=3)
+            if response.status_code == 200:
+                print(proxy)
+                with open("ipList.txt", "a", encoding="utf-8") as f:
+                    f.write(proxy + "\n")
+                    f.close()
+        except Exception as ex:
+            # print(ex)
+            continue
+    time.sleep(random.randint(3, 5))
+
+
+def agent_access():
+    test_url = "http://blog.csdn.net"
+    # 进程间通信队列
+    q = multiprocessing.Manager().Queue()
+    # 创建进程池
+    po = multiprocessing.Pool(5)
+
     for i in range(1, 1912):
         url = "http://www.66ip.cn/" + str(i) + ".html"
-        response = requests.get(url, headers={"User-Agent": random.choice(user_agent)})
-        soup = BeautifulSoup(response.content.decode("gbk"), "lxml")
-        trs = soup.find("table", attrs={"bordercolor": "#6699ff"}).find_all("tr")
-        for tr in trs[1:]:
-            ip = tr.find_all("td")[0].get_text()
-            port = tr.find_all("td")[1].get_text()
-            proxy = "http://" + ip + ":" + port
-            print(proxy)
-            # 验证代理是否可用，如果不可以则抛出异常
-            try:
-                proxies = {"http": proxy}
-                response = requests.get(test_url, headers={"User-Agent": random.choice(user_agent)}, proxies=proxies, timeout=3)
-                if response.status_code == 200:
-                    with open("ipList.txt", "a", encoding="utf-8") as f:
-                        f.write(proxy + "\n")
-                        f.close()
-            except Exception as ex:
-                print(ex)
-        time.sleep(random.randint(3, 5))
+        po.apply_async(get_proxy_ip, args=(q, url, test_url, ))
+
+    po.close()
+    po.join()
 
 
 if __name__ == '__main__':
-    agent_access("http://blog.csdn.net")
+    agent_access()
